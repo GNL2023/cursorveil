@@ -228,7 +228,9 @@ function prepare(base: Rgba, settings: ForgeSettings, frame: number, count: numb
       let b = grade(d[o + 2], settings.contrast, bright);
       if ((settings.motion === "noise" || settings.motion === "orb") && amt > 0) {
         const wob =
-          Math.sin(x * 0.73 + y * 0.41 + frame * 1.37) * amt * (settings.motion === "noise" ? 70 : 42);
+          Math.sin(x * 0.73 + y * 0.41 + frame * 1.37) *
+          amt *
+          (settings.motion === "noise" ? 70 : 42);
         r = clamp(r + wob, 0, 255);
         g = clamp(g + wob, 0, 255);
         b = clamp(b + wob, 0, 255);
@@ -410,7 +412,13 @@ export function gridSize(settings: ForgeSettings) {
   return Math.max(8, Math.round(settings.size / settings.pixel));
 }
 
-export function outputHotspot(hx: number, hy: number, srcW: number, srcH: number, settings: ForgeSettings) {
+export function outputHotspot(
+  hx: number,
+  hy: number,
+  srcW: number,
+  srcH: number,
+  settings: ForgeSettings,
+) {
   const grid = gridSize(settings);
   const gx = Math.min(grid - 1, Math.max(0, Math.round((hx / Math.max(1, srcW - 1)) * (grid - 1))));
   const gy = Math.min(grid - 1, Math.max(0, Math.round((hy / Math.max(1, srcH - 1)) * (grid - 1))));
@@ -437,7 +445,9 @@ export function renderFrames(sources: Rgba[], settings: ForgeSettings): Rgba[] {
     const base = fitted[f % fitted.length];
     const prepped = prepare(base, settings, f, count);
     const dithered =
-      settings.algo === "bayer" ? ditherOrdered(prepped, settings, f) : ditherDiffusion(prepped, settings, settings.algo);
+      settings.algo === "bayer"
+        ? ditherOrdered(prepped, settings, f)
+        : ditherDiffusion(prepped, settings, settings.algo);
     frames.push(nearest(dithered, settings.size, settings.size));
   }
   return frames;

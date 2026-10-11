@@ -111,7 +111,13 @@ export function jiffiesForFps(fps: number) {
   return Math.max(1, Math.min(60, Math.round(60 / Math.max(1, fps))));
 }
 
-export function encodeAni(frames: Rgba[], hotspotX: number, hotspotY: number, fps: number, title: string) {
+export function encodeAni(
+  frames: Rgba[],
+  hotspotX: number,
+  hotspotY: number,
+  fps: number,
+  title: string,
+) {
   if (!frames.length) throw new Error("Geen frames");
   const count = frames.length;
   const anih = new Uint8Array(36);
@@ -128,7 +134,10 @@ export function encodeAni(frames: Rgba[], hotspotX: number, hotspotY: number, fp
   for (let i = 0; i < count; i++) rv.setUint32(i * 4, jif, true);
 
   const icons = frames.map((frame) => chunk("icon", encodeCur(frame, hotspotX, hotspotY)));
-  const info = chunk("LIST", concat([fourcc("INFO"), chunk("INAM", asciiZ(title)), chunk("IART", asciiZ("LUCENT"))]));
+  const info = chunk(
+    "LIST",
+    concat([fourcc("INFO"), chunk("INAM", asciiZ(title)), chunk("IART", asciiZ("LUCENT"))]),
+  );
   const fram = chunk("LIST", concat([fourcc("fram"), ...icons]));
   let body = concat([fourcc("ACON"), info, chunk("anih", anih), chunk("rate", rate), fram]);
   if (body.length & 1) {
@@ -143,6 +152,9 @@ export function encodeAni(frames: Rgba[], hotspotX: number, hotspotY: number, fp
   return file;
 }
 
+/** 1 January 1980. A zero date is invalid and some unzip tools complain. */
+const DOS_DATE = (0 << 9) | (1 << 5) | 1;
+
 export type ZipEntry = { name: string; data: Uint8Array };
 
 export function zipStore(files: ZipEntry[]) {
@@ -156,6 +168,7 @@ export function zipStore(files: ZipEntry[]) {
     const dv = new DataView(local.buffer);
     dv.setUint32(0, 0x04034b50, true);
     dv.setUint16(4, 20, true);
+    dv.setUint16(12, DOS_DATE, true);
     dv.setUint32(14, crc, true);
     dv.setUint32(18, file.data.length, true);
     dv.setUint32(22, file.data.length, true);
@@ -168,6 +181,7 @@ export function zipStore(files: ZipEntry[]) {
     cv.setUint32(0, 0x02014b50, true);
     cv.setUint16(4, 20, true);
     cv.setUint16(6, 20, true);
+    cv.setUint16(14, DOS_DATE, true);
     cv.setUint32(16, crc, true);
     cv.setUint32(20, file.data.length, true);
     cv.setUint32(24, file.data.length, true);

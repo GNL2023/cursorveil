@@ -1,3 +1,12 @@
+import {
+  crystalize,
+  shardMove,
+  shardOf,
+  shardOrbit,
+  shardResize,
+  shardUp,
+  textureTile,
+} from "@/lib/cursor/crystal";
 import { autoHotspot } from "@/lib/cursor/process";
 import { ROLES, type RoleId, type ThemeId } from "@/lib/cursor/roles";
 import type { Rgba } from "@/lib/cursor/types";
@@ -197,15 +206,19 @@ function staffArrow(p: Plot, m: Mat) {
     p.disc(x0, y0, 5, m.accent);
     p.disc(x0, y0, 2, m.hi);
     p.disc(x1, y1, 5, m.deep);
-    sparks(p, [
-      [32, 22],
-      [28, 36],
-      [48, 34],
-      [44, 52],
-      [62, 48],
-      [58, 66],
-      [70, 28],
-    ], m);
+    sparks(
+      p,
+      [
+        [32, 22],
+        [28, 36],
+        [48, 34],
+        [44, 52],
+        [62, 48],
+        [58, 66],
+        [70, 28],
+      ],
+      m,
+    );
   } else {
     p.disc(x0 + 4, y0 + 4, 6, m.deep);
     p.disc(x0, y0, 3.4, m.hi);
@@ -271,15 +284,30 @@ function hourglass(p: Plot, cx: number, cy: number, s: number, edge: C, body: C)
   p.stroke(cx - s, cy + s, cx + s, cy + s, 2.4, edge);
 }
 
-function badge(p: Plot, x: number, y: number, rad: number, m: Mat, kind: "help" | "wait") {
+function chain(p: Plot, cx: number, cy: number, s: number, m: Mat) {
+  const t = Math.max(2, s * 0.16);
+  const d = s * 0.32;
+  // Two interlocked links on a diagonal.
+  p.ring(cx - d, cy + d, s * 0.42, t, m.hi);
+  p.ring(cx + d, cy - d, s * 0.42, t, m.accent);
+  p.stroke(cx - d * 0.6, cy + d * 0.6, cx + d * 0.6, cy - d * 0.6, t, m.hi);
+}
+
+function badge(p: Plot, x: number, y: number, rad: number, m: Mat, kind: "help" | "wait" | "link") {
   p.disc(x, y, rad, [4, 6, 8, 230]);
   p.ring(x, y, rad * 0.78, Math.max(2, rad * 0.16), m.accent);
   if (kind === "help") question(p, x, y - rad * 0.06, rad * 0.85, m.hi);
+  else if (kind === "link") chain(p, x, y, rad * 0.62, m);
   else hourglass(p, x, y, rad * 0.42, m.hi, m.accent);
-  if (m.magic) sparks(p, [
-    [x + rad * 0.9, y - rad],
-    [x - rad, y + rad * 0.2],
-  ], m);
+  if (m.magic)
+    sparks(
+      p,
+      [
+        [x + rad * 0.9, y - rad],
+        [x - rad, y + rad * 0.2],
+      ],
+      m,
+    );
 }
 
 function ibeam(p: Plot, m: Mat) {
@@ -289,11 +317,15 @@ function ibeam(p: Plot, m: Mat) {
   p.stroke(48, 20, 48, 76, 4, m.body);
   p.stroke(33, 16, 63, 16, 4, m.hi);
   p.stroke(33, 80, 63, 80, 4, m.hi);
-  sparks(p, [
-    [74, 28],
-    [22, 48],
-    [76, 70],
-  ], m);
+  sparks(
+    p,
+    [
+      [74, 28],
+      [22, 48],
+      [76, 70],
+    ],
+    m,
+  );
   return glyph(p, 48, 48);
 }
 
@@ -307,11 +339,15 @@ function cross(p: Plot, m: Mat) {
   for (const a of arms) p.stroke(a[0], a[1], a[2], a[3], 8, m.edge);
   for (const a of arms) p.stroke(a[0], a[1], a[2], a[3], 3, m.hi);
   p.disc(48, 48, 2.2, m.accent);
-  sparks(p, [
-    [18, 22],
-    [76, 20],
-    [74, 76],
-  ], m);
+  sparks(
+    p,
+    [
+      [18, 22],
+      [76, 20],
+      [74, 76],
+    ],
+    m,
+  );
   return glyph(p, 48, 48);
 }
 
@@ -319,14 +355,18 @@ function wait(p: Plot, m: Mat) {
   hourglass(p, 48, 48, 28, m.edge, m.body);
   hourglass(p, 48, 48, 22, m.body, m.hi);
   p.disc(48, 40, 3, m.accent);
-  sparks(p, [
-    [18, 22],
-    [76, 18],
-    [16, 74],
-    [78, 72],
-    [48, 12],
-    [84, 48],
-  ], m);
+  sparks(
+    p,
+    [
+      [18, 22],
+      [76, 18],
+      [16, 74],
+      [78, 72],
+      [48, 12],
+      [84, 48],
+    ],
+    m,
+  );
   return glyph(p, 48, 48);
 }
 
@@ -335,10 +375,14 @@ function no(p: Plot, m: Mat) {
   p.ring(48, 48, 30, 3.5, m.hi);
   p.stroke(28, 28, 68, 68, 8, m.edge);
   p.stroke(28, 28, 68, 68, 3.5, m.accent);
-  sparks(p, [
-    [16, 48],
-    [80, 18],
-  ], m);
+  sparks(
+    p,
+    [
+      [16, 48],
+      [80, 18],
+    ],
+    m,
+  );
   return glyph(p, 48, 48);
 }
 
@@ -349,11 +393,15 @@ function pen(p: Plot, m: Mat) {
   p.disc(18, 14, 5, m.edge);
   p.disc(18, 14, 2.6, m.hi);
   p.disc(78, 78, 6, m.deep);
-  sparks(p, [
-    [40, 24],
-    [34, 48],
-    [62, 40],
-  ], m);
+  sparks(
+    p,
+    [
+      [40, 24],
+      [34, 48],
+      [62, 40],
+    ],
+    m,
+  );
   return glyph(p, 18, 14);
 }
 
@@ -371,11 +419,15 @@ function up(p: Plot, m: Mat) {
   p.fill(head, m.body);
   p.stroke(48, 20, 48, 74, 3, m.hi);
   if (!m.magic) p.disc(48, 78, 7, m.deep);
-  sparks(p, [
-    [74, 22],
-    [22, 48],
-    [74, 70],
-  ], m);
+  sparks(
+    p,
+    [
+      [74, 22],
+      [22, 48],
+      [74, 70],
+    ],
+    m,
+  );
   return glyph(p, 48, 12);
 }
 
@@ -404,11 +456,15 @@ function hand(p: Plot, m: Mat) {
   p.fill(mitt, m.body);
   p.stroke(46, 16, 46, 40, 3, m.hi);
   p.disc(40, 70, 4, m.deep);
-  sparks(p, [
-    [70, 18],
-    [18, 40],
-    [84, 64],
-  ], m);
+  sparks(
+    p,
+    [
+      [70, 18],
+      [18, 40],
+      [84, 64],
+    ],
+    m,
+  );
   return glyph(p, 42, 12);
 }
 
@@ -445,11 +501,15 @@ function axis(p: Plot, ang: number, m: Mat, both = true) {
 
 function sizes(p: Plot, ang: number, m: Mat) {
   axis(p, ang, m);
-  sparks(p, [
-    [16, 16],
-    [80, 18],
-    [78, 80],
-  ], m);
+  sparks(
+    p,
+    [
+      [16, 16],
+      [80, 18],
+      [78, 80],
+    ],
+    m,
+  );
   return glyph(p, 48, 48);
 }
 
@@ -520,7 +580,7 @@ function sampleAlpha(img: Rgba, x: number, y: number, rad: number) {
 }
 
 function placeBadge(img: Rgba, hx: number, hy: number) {
-  const rad = Math.max(22, Math.round(Math.min(img.width, img.height) * 0.085));
+  const rad = Math.max(14, Math.round(Math.min(img.width, img.height) * 0.15));
   const spots = [
     [img.width - rad * 1.35, rad * 1.35],
     [rad * 1.35, img.height - rad * 1.35],
@@ -536,19 +596,46 @@ function placeBadge(img: Rgba, hx: number, hy: number) {
   return { ...best, rad };
 }
 
-function stamp(photo: Rgba, theme: ThemeId, kind: "help" | "wait", hx: number, hy: number): Glyph {
+function stamp(
+  photo: Rgba,
+  theme: ThemeId,
+  kind: "help" | "wait" | "link",
+  hx: number,
+  hy: number,
+): Glyph {
   const copy = clone(photo);
   const spot = placeBadge(copy, hx, hy);
   badge(new Plot(copy), spot.x, spot.y, spot.rad, MAT[theme], kind);
   return { frames: [copy], hx, hy };
 }
 
-export function withPhoto(templates: Record<RoleId, Glyph>, photo: Rgba, theme: ThemeId): Record<RoleId, Glyph> {
+export function withPhoto(
+  templates: Record<RoleId, Glyph>,
+  photo: Rgba,
+  theme: ThemeId,
+): Record<RoleId, Glyph> {
   const hot = autoHotspot(photo);
+  const m = MAT[theme];
+  const shard = shardOf(photo, hot.x, hot.y);
+  const tex = textureTile(photo);
   const next = { ...templates };
+  if (tex) {
+    for (const id of ["cross", "ibeam", "nwpen", "no"] as const) {
+      const base = templates[id];
+      next[id] = { ...base, frames: base.frames.map((frame) => crystalize(frame, tex)) };
+    }
+  }
   next.arrow = { frames: [photo], hx: hot.x, hy: hot.y };
   next.help = stamp(photo, theme, "help", hot.x, hot.y);
   next.appstarting = stamp(photo, theme, "wait", hot.x, hot.y);
+  next.hand = stamp(photo, theme, "link", hot.x, hot.y);
+  next.wait = shardOrbit(shard, [m.accent[0], m.accent[1], m.accent[2]]);
+  next.up = shardUp(shard);
+  next.sizens = shardResize(shard, Math.PI / 2);
+  next.sizewe = shardResize(shard, 0);
+  next.sizenwse = shardResize(shard, Math.PI / 4);
+  next.sizenesw = shardResize(shard, -Math.PI / 4);
+  next.sizeall = shardMove(shard);
   return next;
 }
 
