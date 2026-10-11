@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #07080c;
+  --color-bg-raise: #0c1016;
+  --color-surface: #14181f;
+  --color-line: #2a3340;
+  --color-line-strong: #3c4b5c;
+  --color-fg: #e7eef4;
+  --color-muted: #93a0ae;
+  --color-faint: #667484;
+  --color-accent: #9ee7ff;
+  --color-ink: #061014;
+  --font-display: "Syne", "Avenir Next", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --radius-sm: 2px;
+  --radius-md: 6px;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-mono);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-ink);
+  }
+
+  input[type="range"] {
+    appearance: none;
+    height: 2.75rem;
+    width: 100%;
+    background: transparent;
+  }
+
+  input[type="range"]:focus-visible {
+    outline-offset: 0;
+  }
+
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 2px;
+    background: var(--color-line-strong);
+  }
+
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    margin-top: -6px;
+    background: var(--color-accent);
+    border: 0;
+  }
+
+  input[type="range"]::-moz-range-track {
+    height: 2px;
+    background: var(--color-line-strong);
+    border: 0;
+  }
+
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--color-accent);
+    border: 0;
+    border-radius: 0;
+  }
+}
+
+.checker {
+  background-color: var(--color-bg-raise);
+  background-image:
+    linear-gradient(45deg, var(--color-surface) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-surface) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-surface) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-surface) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+
+.stage-plate {
+  background-color: var(--color-bg);
+  background-image:
+    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.cursor-test,
+.cursor-test * {
+  cursor: none !important;
+}
+
+.hotspot-pad,
+.hotspot-pad * {
+  cursor: crosshair !important;
+}
+
+.is-pressed {
+  filter: brightness(1.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-fade {
+    transition: none !important;
+  }
+}

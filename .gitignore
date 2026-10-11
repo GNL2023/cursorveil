@@ -1,0 +1,11 @@
+node_modules/
+.vercel/
+.tanstack/
+.output/
+dist/
+.env*
+.grok/preview.log
+.grok/status
+.node_modules.lock
+screenshots/*.png
+screenshots/*.json
