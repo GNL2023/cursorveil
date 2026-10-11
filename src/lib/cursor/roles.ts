@@ -171,7 +171,7 @@ export const THEMES = [
 export type ThemeId = (typeof THEMES)[number]["id"];
 
 export const THEME_SRC: Record<ThemeId, string> = {
-  ether: "/sources/ether-arrow.png",
-  mage: "/sources/mage-staff.png",
-  bronze: "/sources/bronze-staff.png",
+  ether: "sources/ether-arrow.png",
+  mage: "sources/mage-staff.png",
+  bronze: "sources/bronze-staff.png",
 };
